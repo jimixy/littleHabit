@@ -4,8 +4,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger'
 
-import * as moduleDemo from './moduleDemo'
-
 Vue.use(Vuex)
 
 const rootStore = {
@@ -28,7 +26,7 @@ const store = () =>
   new Vuex.Store({
     ...rootStore,
     modules: {
-      moduleDemo
+      // moduleDemo
     },
     // 开启状态改变日志，开发模式下使用
     plugins: [createLogger()]

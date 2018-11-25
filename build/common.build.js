@@ -11,13 +11,13 @@ module.exports = {
       plugins
     } = config
     // Run ESLint on save
-    if (isDev && isClient) {
-      config.module.rules.push({
-        enforce: 'pre',
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        exclude: /(node_modules)/
-      })
-    }
+    // if (isDev && isClient) {
+    //   config.module.rules.push({
+    //     enforce: 'pre',
+    //     test: /\.(js|vue)$/,
+    //     loader: 'eslint-loader',
+    //     exclude: /(node_modules)/
+    //   })
+    // }
   }
 }
