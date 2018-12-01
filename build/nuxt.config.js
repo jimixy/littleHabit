@@ -19,9 +19,7 @@ module.exports = {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
   loading: { color: '#fff' },
-  css: [
-    'assets/css/global/index.styl'
-  ],
+  css: ['assets/css/global/index.styl'],
   plugins: [
     {
       src: '~/plugins/index.js',
@@ -40,5 +38,5 @@ module.exports = {
   build: {
     ...commonConfig,
     ...envConfig
-  }
+  },
 }

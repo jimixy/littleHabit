@@ -1,26 +1,26 @@
 <template>
   <section class="container">
     <!-- 注册 -->
-    <!-- <form v-if="!isLogin" ref="registerForm" class="login-form">
+    <form v-show="!isLogin" class="login-form" data-vv-scope="registerForm">
       <div class="hearder tc">
         注册
       </div>
-      <md-field :class="{'md-invalid': errors.has('nickname')}">
+      <md-field :class="{'md-invalid': errors.has('registerForm.nickname')}">
         <label>昵称</label>
         <md-input v-validate="'required|min:2|max:22'" v-model="registerForm.nickname" name="nickname"/>
-        <span v-show="errors.has('nickname')" class="md-error">昵称输入有误!</span>
+        <span v-show="errors.has('registerForm.nickname')" class="md-error">昵称输入有误!</span>
       </md-field>
 
-      <md-field :class="{'md-invalid': errors.has('account')}">
+      <md-field :class="{'md-invalid': errors.has('registerForm.account')}">
         <label>Email</label>
         <md-input v-validate="'required|email'" v-model="registerForm.account" name="account" />
-        <span v-show="errors.has('account')" class="md-error">电子邮箱格式错误</span>
+        <span v-show="errors.has('registerForm.account')" class="md-error">电子邮箱格式错误</span>
       </md-field>
 
-      <md-field :class="{'md-invalid': errors.has('secret')}">
+      <md-field :class="{'md-invalid': errors.has('registerForm.secret')}">
         <label>密码</label>
         <md-input v-validate="'required|min:6|max:22'" v-model="registerForm.secret" name="secret" />
-        <span v-show="errors.has('account')" class="md-error">密码输入有误!</span>
+        <span v-show="errors.has('registerForm.secret')" class="md-error">密码输入有误!</span>
       </md-field>
 
       <div class="has-count">
@@ -30,23 +30,23 @@
       <div class="tc footer w80">
         <md-button class="md-raised md-primary w100 mg0" @click.prevent="sbRegister">注册</md-button>
       </div>
-    </form> -->
+    </form>
 
     <!-- 登录 -->
-    <form v-if="isLogin" ref="loginForm" class="login-form" >
+    <form v-show="isLogin" class="login-form" data-vv-scope="loginForm">
       <div class="hearder tc">
         登录
       </div>
-      <md-field :class="{'md-invalid': errors.has('account')}">
+      <md-field :class="{'md-invalid': errors.has('loginForm.account')}">
         <label>Email</label>
         <md-input v-validate="'required|email'" v-model="loginForm.account" name="account" />
-        <span v-show="errors.has('account')" class="md-error">电子邮箱格式错误</span>
+        <span v-show="errors.has('loginForm.account')" class="md-error">电子邮箱格式错误</span>
       </md-field>
 
-      <md-field :class="{'md-invalid': errors.has('secret')}">
+      <md-field :class="{'md-invalid': errors.has('loginForm.secret')}">
         <label>密码</label>
-        <md-input v-validate="'required|min:6|max:22'" v-model="loginForm.secret" name="secret" />
-        <span v-show="errors.has('account')" class="md-error">密码输入有误!</span>
+        <md-input v-validate="'required|min:6|max:22'" v-model="loginForm.secret" type="password" name="secret" />
+        <span v-show="errors.has('loginForm.secret')" class="md-error">密码输入有误!</span>
       </md-field>
 
       <div class="has-count">
@@ -57,11 +57,7 @@
         <md-button class="md-raised md-primary w100 mg0" @click.prevent="sbLogin">登录</md-button>
       </div>
     </form>
-
-    <div class="tc footer w80">
-      <md-button class="md-raised md-primary w100 mg0" @click.prevent="doTest">测试</md-button>
-    </div>
-
+    
   </section>
 </template>
 
@@ -74,7 +70,7 @@ export default {
   components: { },
   data() {
     return {
-      isLogin: true,
+      isLogin: false,
       registerForm: {
         type: 100,
         nickname: '',
@@ -86,7 +82,6 @@ export default {
         account: '',
         secret: ''
       },
-      // hasMessages: false
     }
   },
   computed: {
@@ -97,27 +92,23 @@ export default {
     // }
   },
   methods: {
-    doTest(){
-      getAllHabit().then(res => {
-        console.log('getAllHabit',res);
-      });
-    },
     doLogin(){
-      this.isLogin=!this.isLogin
+      this.$validator.reset();
+      this.isLogin=!this.isLogin;
     },
     sbLogin(){
-      this.$validator.validate().then(result => {
+      this.$validator.validateAll('loginForm').then(result => {
         if (!result) {
-          console.log('error', result)
           return
         }
         login(this.loginForm).then(res => {
-          console.log('res', res)
           if (!res.error_code) {
             setLocal('token',window.btoa(res.data.token))
             showToast('登录成功');
-            // setTimeout(() => {
-            // }, timeout);
+            this.$router.push({
+              path:'/home'
+            });
+            // router.push({ path: 'register', query: { plan: 'private' }})
           } else {
             showToast('登录失败');
           }
@@ -125,15 +116,11 @@ export default {
       })
     },
     sbRegister() {
-      this.$validator.validate().then(result => {
+      this.$validator.validateAll('registerForm').then(result => {
         if (!result) {
-          console.log('error', result)
-          // console.log('222', this.errors);
-          // this.errors.clear();
           return
         }
         register(this.registerForm).then(res => {
-          console.log('res', res)
           if (!res.error_code) {
             showToast('注册成功');
           } else {

@@ -1,13 +1,17 @@
 import axios from 'axios'
 import qs from 'qs'
-import getCookie from './cookie'
+import { setLocal, getLocal } from '~/libs/util'
+import { showToast } from '~/components/toast'
+
+let baseUrl = '/api'
+if (process.env.NODE_ENV === 'development') {
+  // baseUrl = 'http://192.168.0.4:5000/api'
+}
 
 class Ajax {
   constructor(options) {
-    this.axios = axios.create({ baseURL: process.env.baseUrl })
-    this.commonPath = (options || {}).commonPath
-      ? options.commonPath
-      : '/api/v1'
+    this.axios = axios.create({ baseURL: baseUrl })
+    this.commonPath = (options || {}).commonPath ? options.commonPath : ''
     this.isLogin = false
     // 通用拦截器（全局的成功后的回调函数，用作去掉 loading 等操作）
     if (options && typeof options.success === 'function') {
@@ -21,13 +25,11 @@ class Ajax {
     // 给POST请求头加上x-crsf-token
     this.axios.interceptors.request.use(
       config => {
-        if (
-          !/^(GET|HEAD|OPTIONS|TRACE)$/i.test(config.method) &&
-          !this.axios.credentials &&
-          process.client // 浏览器环境才找 cookie
-        ) {
-          const csrftoken = getCookie('csrf-token')
-          config.headers.common['X-CSRF-Token'] = csrftoken
+        if (!/^https:\/\/|http:\/\//.test(config.url)) {
+          const token = getLocal('token')
+          if (token && token !== 'undefined') {
+            config.headers.common['Authorization'] = 'Basic ' + token + 'Og=='
+          }
         }
         return config
       },
@@ -42,8 +44,9 @@ class Ajax {
         return response
       },
       err => {
-        if (err.response) {
-          switch (err.response.status) {
+        const errorInfo = err.response
+        if (errorInfo) {
+          switch (errorInfo.status) {
             case 404:
               console.log('请求发生404错误')
               break
@@ -53,20 +56,18 @@ class Ajax {
             case 504:
               console.log('请求超时')
               break
-            // case 400: // 用户没有csrf-token
-            // case 401: // 用户没有登录态
-            //   if (!this.isLogin && process.client) {
-            //     // 只使第一次401的hash
-            //     this.isLogin = true
-            //     if (window.location.pathname || window.location.hash) {
-            //       this.next = encodeURIComponent(
-            //         window.location.pathname + window.location.hash
-            //       )
-            //     }
-            //     const redirect = '/login?next=' + this.next
-            //     window.location.href = location.origin + redirect
-            //   }
-            //   break
+            case 400: // 用户没有csrf-token
+              if (errorInfo.data && errorInfo.data.msg) {
+                Object.values(errorInfo.data.msg).forEach(val => {
+                  showToast(val[0])
+                })
+              }
+              break
+            case 401: // 用户没有登录态
+              if (errorInfo.data && errorInfo.data.msg) {
+                showToast(errorInfo.data.msg)
+              }
+              break
             default:
               console.log('error:' + err.response.status)
               break
@@ -86,18 +87,18 @@ class Ajax {
   normalizeRes(res) {
     if (res && typeof res.data === 'string') {
       res.data = {
-        code: -1,
+        error_code: -1,
         message: res.data
       }
     } else if (res && res.statusText) {
       res.data = {
-        code: res.status,
+        error_code: res.status,
         message: res.statusText
       }
     } else {
       res = {
         data: {
-          code: -1,
+          error_code: -1,
           message: '未知错误'
         }
       }
@@ -159,7 +160,7 @@ class Ajax {
           config.data = params
         }
         const commonPath = config.commonPath || this.commonPath
-        console.log('commonPath + path', commonPath + path)
+        // console.log('commonPath + path', commonPath + path)
         return this.axios({
           method,
           url: commonPath + path,
