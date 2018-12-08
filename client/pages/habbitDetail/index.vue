@@ -1,6 +1,8 @@
 <template>
   <section class="container">
-    <div class="wrapper">22</div>
+    <div class="wrapper">习惯详情页
+      <md-icon>perm_identity</md-icon>
+    </div>
   </section>
 </template>
 

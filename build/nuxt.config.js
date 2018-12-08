@@ -26,7 +26,7 @@ module.exports = {
       ssr: true
     }
   ],
-  modules: ['@nuxtjs/axios', '~/modules/test.js'],
+  modules: ['@nuxtjs/axios', '~/modules/test.js',  ['@nuxtjs/proxy']],
   vendor: ['vue-router', '@nuxtjs/axios'],
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
@@ -39,4 +39,7 @@ module.exports = {
     ...commonConfig,
     ...envConfig
   },
+  proxy: {
+    '/api': 'http://192.168.0.4:5000',
+  }
 }

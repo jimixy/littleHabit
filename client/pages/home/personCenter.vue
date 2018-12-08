@@ -1,13 +1,12 @@
 <template>
   <section class="container">
-    <div class="wrapper">22</div>
+    <div class="wrapper">个人中心页面</div>
   </section>
 </template>
 
 <script>
 export default {
-  data: () => ({
-  }),
+  components: {},
   computed: {},
   methods: {}
 }

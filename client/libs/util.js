@@ -4,15 +4,17 @@
  */
 export const setLocal = (key, val) => {
   if(typeof val==='string'){
-    window.localStorage.setItem(key, val)
+    localStorage.setItem(key, val)
   }else{
-    window.localStorage.setItem(key, JSON.stringify(val))
+    localStorage.setItem(key, JSON.stringify(val))
   }
 }
 
 export const getLocal = key => {
+  // 如果不是客服端，直接退出
+  if(!window) return null;
   try {
-    return window.localStorage.getItem(key)
+    return localStorage.getItem(key)
   } catch (error) {
     console.log(error)
   }
@@ -20,7 +22,7 @@ export const getLocal = key => {
 
 export const delLocal = key => {
   try {
-    window.localStorage.removeItem(key)
+    localStorage.removeItem(key)
   } catch (error) {
     console.log(error)
   }

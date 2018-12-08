@@ -7,19 +7,19 @@
       </div>
       <md-field :class="{'md-invalid': errors.has('registerForm.nickname')}">
         <label>昵称</label>
-        <md-input v-validate="'required|min:2|max:22'" v-model="registerForm.nickname" name="nickname"/>
+        <md-input v-validate="'required|min:2|max:22'" v-model.trim="registerForm.nickname" name="nickname"/>
         <span v-show="errors.has('registerForm.nickname')" class="md-error">昵称输入有误!</span>
       </md-field>
 
       <md-field :class="{'md-invalid': errors.has('registerForm.account')}">
         <label>Email</label>
-        <md-input v-validate="'required|email'" v-model="registerForm.account" name="account" />
+        <md-input v-validate="'required|email'" v-model.trim="registerForm.account" name="account" />
         <span v-show="errors.has('registerForm.account')" class="md-error">电子邮箱格式错误</span>
       </md-field>
 
       <md-field :class="{'md-invalid': errors.has('registerForm.secret')}">
         <label>密码</label>
-        <md-input v-validate="'required|min:6|max:22'" v-model="registerForm.secret" name="secret" />
+        <md-input v-validate="'required|min:6|max:22'" v-model.trim="registerForm.secret" name="secret" @keyup.enter="sbRegister"/>
         <span v-show="errors.has('registerForm.secret')" class="md-error">密码输入有误!</span>
       </md-field>
 
@@ -39,22 +39,22 @@
       </div>
       <md-field :class="{'md-invalid': errors.has('loginForm.account')}">
         <label>Email</label>
-        <md-input v-validate="'required|email'" v-model="loginForm.account" name="account" />
+        <md-input v-validate="'required|email'" v-model.trim="loginForm.account" name="account" />
         <span v-show="errors.has('loginForm.account')" class="md-error">电子邮箱格式错误</span>
       </md-field>
 
       <md-field :class="{'md-invalid': errors.has('loginForm.secret')}">
         <label>密码</label>
-        <md-input v-validate="'required|min:6|max:22'" v-model="loginForm.secret" type="password" name="secret" />
+        <md-input v-validate="'required|min:6|max:22'" v-model.trim="loginForm.secret" type="password" name="secret" @keyup.enter="sbLogin" />
         <span v-show="errors.has('loginForm.secret')" class="md-error">密码输入有误!</span>
       </md-field>
 
       <div class="has-count">
-        没有账号？点击<a class="do-login" @click.prevent="doLogin">注册</a>
+        没有账号？点击<a class="do-login" @click.native="doLogin">注册</a>
       </div>
 
       <div class="tc footer w80">
-        <md-button class="md-raised md-primary w100 mg0" @click.prevent="sbLogin">登录</md-button>
+        <md-button class="md-raised md-primary w100 mg0" @click.native="sbLogin">登录</md-button>
       </div>
     </form>
     
@@ -107,8 +107,8 @@ export default {
             showToast('登录成功');
             this.$router.push({
               path:'/home'
+              // query: { plan: 'private' }
             });
-            // router.push({ path: 'register', query: { plan: 'private' }})
           } else {
             showToast('登录失败');
           }
